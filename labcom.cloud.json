@@ -1,0 +1,1055 @@
+[
+    {
+        "id": "4abd14ed2dee35be",
+        "type": "tab",
+        "label": "Poolab cloud",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "be945c7e3872c3de",
+        "type": "inject",
+        "z": "4abd14ed2dee35be",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "300",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
+        "x": 110,
+        "y": 460,
+        "wires": [
+            [
+                "079b20fbc9c5c6cd"
+            ]
+        ]
+    },
+    {
+        "id": "f8574e6a247c75cc",
+        "type": "graphql",
+        "z": "4abd14ed2dee35be",
+        "name": "Activeclorine",
+        "graphql": "e2532d3071476e10",
+        "format": "handlebars",
+        "template": "{\n  Measurements {\n    accountId\n    account\n    id\n    unit\n    parameter\n    timestamp\n    comment\n    value\n    device_serial\n    operator_name\n    ideal_low\n    ideal_high\n  }\n  ActiveChlorine {\n    UnboundChlorine\n    BoundToCYA\n    OCl\n    Cl3Cy\n    Cl2Cy\n    HOCl\n    HClCy\n    HCl2Cy\n    H2ClCy\n  }\n}\n",
+        "syntax": "mustache",
+        "token": "",
+        "showDebug": false,
+        "x": 670,
+        "y": 460,
+        "wires": [
+            [
+                "c3ba26d66f7a3f43",
+                "3efc6cae58abacdd"
+            ],
+            [
+                "ec84389011b96ae3"
+            ]
+        ]
+    },
+    {
+        "id": "c3ba26d66f7a3f43",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "debug 2",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "079b20fbc9c5c6cd",
+        "type": "change",
+        "z": "4abd14ed2dee35be",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "customHeaders.Authorization",
+                "pt": "msg",
+                "to": "TOKEN",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 390,
+        "y": 460,
+        "wires": [
+            [
+                "f8574e6a247c75cc"
+            ]
+        ]
+    },
+    {
+        "id": "ec84389011b96ae3",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "debug 3",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "e65c48e915a76e38",
+        "type": "split",
+        "z": "4abd14ed2dee35be",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "topic",
+        "x": 1330,
+        "y": 460,
+        "wires": [
+            [
+                "c0b450864738d7ab",
+                "96d0d4180af7fc31"
+            ]
+        ]
+    },
+    {
+        "id": "c0b450864738d7ab",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "debug 4",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1320,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "162b46fe5995de39",
+        "type": "switch",
+        "z": "4abd14ed2dee35be",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "Measurements",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "ActiveChlorine",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 330,
+        "y": 780,
+        "wires": [
+            [
+                "0946e302f038f2d7",
+                "fee344da40f7b1a1"
+            ],
+            [
+                "b048d0ad330caab5"
+            ]
+        ]
+    },
+    {
+        "id": "0946e302f038f2d7",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "Measurements Array",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 360,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "b048d0ad330caab5",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "ActiveChlorine",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 380,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "96d0d4180af7fc31",
+        "type": "split",
+        "z": "4abd14ed2dee35be",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "topic",
+        "x": 130,
+        "y": 780,
+        "wires": [
+            [
+                "162b46fe5995de39",
+                "660ee2960d12b814"
+            ]
+        ]
+    },
+    {
+        "id": "660ee2960d12b814",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "debug 7",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 120,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "fee344da40f7b1a1",
+        "type": "split",
+        "z": "4abd14ed2dee35be",
+        "name": "measurements",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "topic",
+        "x": 600,
+        "y": 780,
+        "wires": [
+            [
+                "ab22a3a4d061e283",
+                "cfcc6c44baf40729"
+            ]
+        ]
+    },
+    {
+        "id": "ab22a3a4d061e283",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "Measurements",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "22cb6e756a5461e6",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "PL Chlorine Free",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2010,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "d8e5a9b6af1992a5",
+        "type": "switch",
+        "z": "4abd14ed2dee35be",
+        "name": "parameter",
+        "property": "payload.parameter",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "PL Chlorine Free",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "PL T-Alka",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "PL Cyanuric Acid",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "PL pH",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": true,
+        "outputs": 4,
+        "x": 1730,
+        "y": 680,
+        "wires": [
+            [
+                "22cb6e756a5461e6",
+                "f9e0be96dde29992"
+            ],
+            [
+                "8e6c69ffdd35a6cb",
+                "a32eeb804f6766d2"
+            ],
+            [
+                "93240b14dd13a1e9",
+                "2b42366eac47ad43"
+            ],
+            [
+                "c997996e40f6eca4",
+                "6d64ee8e9ff908de"
+            ]
+        ]
+    },
+    {
+        "id": "8e6c69ffdd35a6cb",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "PL T-Alka",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1980,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "93240b14dd13a1e9",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "PL Cyanuric Acid",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2010,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "c997996e40f6eca4",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "PL pH",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1970,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "3efc6cae58abacdd",
+        "type": "change",
+        "z": "4abd14ed2dee35be",
+        "name": "",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "customHeaders",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1060,
+        "y": 460,
+        "wires": [
+            [
+                "e65c48e915a76e38"
+            ]
+        ]
+    },
+    {
+        "id": "69707c2a7ab99ac3",
+        "type": "function",
+        "z": "4abd14ed2dee35be",
+        "name": "count id",
+        "func": "\nvar count = flow.get('countaccount1') || 0;\nnode.log(\"info\");\nvar id = msg.payload.id;\nif(id > count)\n{\n    ++count;\n    flow.set('countaccount1', count);\n    return [msg, null];\n}\nelse\n    return [null, msg];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1400,
+        "y": 760,
+        "wires": [
+            [
+                "d8e5a9b6af1992a5"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "f9e0be96dde29992",
+        "type": "ha-sensor",
+        "z": "4abd14ed2dee35be",
+        "name": "PL Chlorine Free",
+        "entityConfig": "a92f7ee6b8f42b81",
+        "version": 0,
+        "state": "payload.value",
+        "stateType": "msg",
+        "attributes": [
+            {
+                "property": "timestamp",
+                "value": "",
+                "valueType": "date"
+            },
+            {
+                "property": "accountid",
+                "value": "payload.accountId",
+                "valueType": "msg"
+            }
+        ],
+        "inputOverride": "allow",
+        "outputProperties": [],
+        "x": 2010,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a32eeb804f6766d2",
+        "type": "ha-sensor",
+        "z": "4abd14ed2dee35be",
+        "name": "PL T-Alka",
+        "entityConfig": "cb3cdfb87ad20e82",
+        "version": 0,
+        "state": "payload.value",
+        "stateType": "msg",
+        "attributes": [],
+        "inputOverride": "allow",
+        "outputProperties": [],
+        "x": 1980,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2b42366eac47ad43",
+        "type": "ha-sensor",
+        "z": "4abd14ed2dee35be",
+        "name": "PL Cyanuric Acid",
+        "entityConfig": "2053ebe80b1475f9",
+        "version": 0,
+        "state": "payload.value",
+        "stateType": "msg",
+        "attributes": [],
+        "inputOverride": "allow",
+        "outputProperties": [],
+        "x": 2010,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6d64ee8e9ff908de",
+        "type": "ha-sensor",
+        "z": "4abd14ed2dee35be",
+        "name": "PL Ph",
+        "entityConfig": "970e543b6b175a31",
+        "version": 0,
+        "state": "payload.value",
+        "stateType": "msg",
+        "attributes": [],
+        "inputOverride": "allow",
+        "outputProperties": [],
+        "x": 1970,
+        "y": 780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7c5107e17411b801",
+        "type": "comment",
+        "z": "4abd14ed2dee35be",
+        "name": "TOKEN",
+        "info": "Set TOKEN from https://labcom.cloud/pages/user-setting",
+        "x": 310,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "e3913ae9983a324a",
+        "type": "comment",
+        "z": "4abd14ed2dee35be",
+        "name": "Graphql",
+        "info": "Query the labcom graphql endpoint.",
+        "x": 650,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "fa6541f2e00752a9",
+        "type": "comment",
+        "z": "4abd14ed2dee35be",
+        "name": "Only update latest reading",
+        "info": "Each measurement in an object, \neach object has an id. \nStore the largest id and do not \nupdate readings already read",
+        "x": 1410,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "b0a4ef3f9c7f66ae",
+        "type": "catch",
+        "z": "4abd14ed2dee35be",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 360,
+        "y": 160,
+        "wires": [
+            [
+                "856d688c8f0b46e8"
+            ]
+        ]
+    },
+    {
+        "id": "856d688c8f0b46e8",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "aa8361c1aa76875c",
+        "type": "function",
+        "z": "4abd14ed2dee35be",
+        "name": "accountid",
+        "func": "var accountid = msg.payload.accountId;\nif (accountid == 1) {\n    return [msg, null, null];\n}\nelse if(accountid == 2)\n    return [null, msg, null];\nelse\n    return [null, null, msg];",
+        "outputs": 3,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1120,
+        "y": 760,
+        "wires": [
+            [
+                "69707c2a7ab99ac3",
+                "7e86b7aec50f4044"
+            ],
+            [
+                "2af5c38425523ccf",
+                "96e2b64cc60adcda"
+            ],
+            [
+                "bd08721fc61882e0"
+            ]
+        ]
+    },
+    {
+        "id": "7e86b7aec50f4044",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1280,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "2af5c38425523ccf",
+        "type": "function",
+        "z": "4abd14ed2dee35be",
+        "name": "count id",
+        "func": "\nvar count = flow.get('countaccount2') || 0;\nnode.log(\"info\");\nvar id = msg.payload.id;\nif(id > count)\n{\n    ++count;\n    flow.set('countaccount2', count);\n    return [msg, null];\n}\nelse\n    return [null, msg];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1400,
+        "y": 1100,
+        "wires": [
+            [
+                "c0999f966e08aa5c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "c0999f966e08aa5c",
+        "type": "switch",
+        "z": "4abd14ed2dee35be",
+        "name": "parameter",
+        "property": "payload.parameter",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "PL Chlorine Free",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "PL T-Alka",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "PL Cyanuric Acid",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "PL pH",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": true,
+        "outputs": 4,
+        "x": 1750,
+        "y": 1100,
+        "wires": [
+            [
+                "123dd67bc0cef4d0"
+            ],
+            [
+                "7efd051d1285f2ee"
+            ],
+            [
+                "881d4ba0e8389de6"
+            ],
+            [
+                "bcb00844d998c90a"
+            ]
+        ]
+    },
+    {
+        "id": "96e2b64cc60adcda",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "debug 10",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1380,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "bd08721fc61882e0",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "debug 11",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1060,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "bcb00844d998c90a",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "SPA PL pH",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2010,
+        "y": 1240,
+        "wires": []
+    },
+    {
+        "id": "881d4ba0e8389de6",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "SPA PL Cyanuric Acid",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2040,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "7efd051d1285f2ee",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "SPA PL T-Alka",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2020,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "123dd67bc0cef4d0",
+        "type": "debug",
+        "z": "4abd14ed2dee35be",
+        "name": "SPA PL Chlorine Free",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2040,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "cfcc6c44baf40729",
+        "type": "moment",
+        "z": "4abd14ed2dee35be",
+        "name": "",
+        "topic": "",
+        "input": "payload.timestamp",
+        "inputType": "msg",
+        "inTz": "timestamp",
+        "adjAmount": 0,
+        "adjType": "days",
+        "adjDir": "add",
+        "format": "",
+        "locale": "C",
+        "output": "payload.timestamp",
+        "outputType": "msg",
+        "outTz": "Europe/Stockholm",
+        "x": 860,
+        "y": 780,
+        "wires": [
+            [
+                "aa8361c1aa76875c"
+            ]
+        ]
+    },
+    {
+        "id": "8bd4a9c9e4e8443a",
+        "type": "comment",
+        "z": "4abd14ed2dee35be",
+        "name": "Map to sensor",
+        "info": "",
+        "x": 1730,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "ecb312284ffe4aed",
+        "type": "comment",
+        "z": "4abd14ed2dee35be",
+        "name": "Map to sensor",
+        "info": "",
+        "x": 1750,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "b0978cb48abf02ad",
+        "type": "comment",
+        "z": "4abd14ed2dee35be",
+        "name": "Map accountid to pool or spa",
+        "info": "Each measurement in an object, \neach object has an id. \nStore the largest id and do not \nupdate readings already read",
+        "x": 1120,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "e2532d3071476e10",
+        "type": "graphql-server",
+        "name": "Labcom",
+        "endpoint": "https://backend.labcom.cloud/graphql",
+        "token": ""
+    },
+    {
+        "id": "a92f7ee6b8f42b81",
+        "type": "ha-entity-config",
+        "server": "22775648.73a4ca",
+        "deviceConfig": "",
+        "name": "PL Chlorine Free",
+        "version": "6",
+        "entityType": "sensor",
+        "haConfig": [
+            {
+                "property": "name",
+                "value": "PL Chlorine Free"
+            },
+            {
+                "property": "icon",
+                "value": ""
+            },
+            {
+                "property": "entity_category",
+                "value": ""
+            },
+            {
+                "property": "device_class",
+                "value": ""
+            },
+            {
+                "property": "unit_of_measurement",
+                "value": "ppm"
+            },
+            {
+                "property": "state_class",
+                "value": "measurement"
+            }
+        ],
+        "resend": false,
+        "debugEnabled": true
+    },
+    {
+        "id": "cb3cdfb87ad20e82",
+        "type": "ha-entity-config",
+        "server": "22775648.73a4ca",
+        "deviceConfig": "",
+        "name": "PL T-Alka",
+        "version": "6",
+        "entityType": "sensor",
+        "haConfig": [
+            {
+                "property": "name",
+                "value": "PL T-Alka"
+            },
+            {
+                "property": "icon",
+                "value": ""
+            },
+            {
+                "property": "entity_category",
+                "value": ""
+            },
+            {
+                "property": "device_class",
+                "value": ""
+            },
+            {
+                "property": "unit_of_measurement",
+                "value": "ppm"
+            },
+            {
+                "property": "state_class",
+                "value": "measurement"
+            }
+        ],
+        "resend": false,
+        "debugEnabled": false
+    },
+    {
+        "id": "2053ebe80b1475f9",
+        "type": "ha-entity-config",
+        "server": "22775648.73a4ca",
+        "deviceConfig": "",
+        "name": "PL Cyanuric Acid",
+        "version": "6",
+        "entityType": "sensor",
+        "haConfig": [
+            {
+                "property": "name",
+                "value": "PL Cyanuric Acid"
+            },
+            {
+                "property": "icon",
+                "value": ""
+            },
+            {
+                "property": "entity_category",
+                "value": ""
+            },
+            {
+                "property": "device_class",
+                "value": ""
+            },
+            {
+                "property": "unit_of_measurement",
+                "value": "ppm"
+            },
+            {
+                "property": "state_class",
+                "value": "measurement"
+            }
+        ],
+        "resend": false,
+        "debugEnabled": false
+    },
+    {
+        "id": "970e543b6b175a31",
+        "type": "ha-entity-config",
+        "server": "22775648.73a4ca",
+        "deviceConfig": "",
+        "name": "PL Ph",
+        "version": "6",
+        "entityType": "sensor",
+        "haConfig": [
+            {
+                "property": "name",
+                "value": "PL Ph"
+            },
+            {
+                "property": "icon",
+                "value": ""
+            },
+            {
+                "property": "entity_category",
+                "value": ""
+            },
+            {
+                "property": "device_class",
+                "value": ""
+            },
+            {
+                "property": "unit_of_measurement",
+                "value": "Ph"
+            },
+            {
+                "property": "state_class",
+                "value": "measurement"
+            }
+        ],
+        "resend": false,
+        "debugEnabled": false
+    },
+    {
+        "id": "22775648.73a4ca",
+        "type": "server",
+        "name": "Home Assistant",
+        "version": 5,
+        "addon": true,
+        "rejectUnauthorizedCerts": true,
+        "ha_boolean": "y|yes|true|on|home|open",
+        "connectionDelay": false,
+        "cacheJson": true,
+        "heartbeat": false,
+        "heartbeatInterval": 30,
+        "areaSelector": "friendlyName",
+        "deviceSelector": "friendlyName",
+        "entitySelector": "friendlyName",
+        "statusSeparator": "at: ",
+        "statusYear": "hidden",
+        "statusMonth": "short",
+        "statusDay": "numeric",
+        "statusHourCycle": "h23",
+        "statusTimeFormat": "h:m",
+        "enableGlobalContextStore": true
+    }
+]

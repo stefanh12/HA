@@ -1,0 +1,518 @@
+# Atlas Scientific pool controller
+# kit also has two ezo dosing pumps, one for acid and one for chlorine
+# https://atlas-scientific.com/peristaltic/ezo-pmp/
+# https://atlas-scientific.com/kits/wi-fi-pool-kit/
+# note that you may have to ground the system to earth. Drive down a earth rod, connect the rod to GND pin on the ic2 connector for the pumps. Now your pH should read correctly
+
+substitutions:
+  devicename: "pool-ezo"
+  name: pool-ezo
+esphome:
+  name: "$devicename"
+
+esp32:
+  board: featheresp32
+  framework:
+    type: arduino
+
+
+# Enable logging
+logger:
+ # level: verbose
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_ezo_key
+ 
+ota:
+  - platform: esphome
+    password: !secret ota_ezo_password
+
+wifi:
+  ssid: !secret wifi__iot2_ssid
+  password: !secret wifi_iot2_password
+  manual_ip:
+    static_ip: 192.168.2.218
+    gateway: 192.168.2.1
+    subnet: 255.255.255.0  
+#  use_address: 192.168.2.237
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${devicename}
+    password: !secret wifi_ap_password
+
+captive_portal:
+i2c:
+  sda: 23
+  scl: 22
+ # scan: true
+  id: bus_a
+
+
+ezo_pmp:
+  - id: ezo_cl_pmp
+    address: 103  # Default Address for the EZO-PMP.
+    update_interval: 10s    
+  - id: ezo_acid_pmp
+    address: 104  # Default Address for the EZO-PMP.
+    update_interval: 10s 
+
+  
+          
+sensor:
+  - platform: uptime
+    name: Relay Uptime
+
+  - platform: wifi_signal
+    name: Relay WiFi Signal
+    update_interval: 60s
+
+  - platform: ezo
+    name: "pH"
+    id: ph_ezo
+    address: 99
+    unit_of_measurement: "pH"
+    update_interval: 60s
+    accuracy_decimals: 2
+    on_device_information:
+      then:
+      - lambda: |-
+          ESP_LOGI("main", "ph1_on_device_information %s", x.c_str());
+    on_led:
+      then:
+      - lambda: |-
+          ESP_LOGI("main", "ph1_on_led %d", x);
+    on_slope:
+      - lambda: |-
+          ESP_LOGI("main", "ph1_on_slope %s", x.c_str());
+    on_calibration:
+      then:
+      - lambda: |-
+          ESP_LOGI("main", "ph1_on_calibration %s", x.c_str());
+    on_t:
+      then:
+      - lambda: |-
+          ESP_LOGI("main", "ph1_on_t %s", x.c_str());
+    on_custom:
+      then:
+      - lambda: |-
+          ESP_LOGI("main", "ph1_on_custom %s", x.c_str());    
+
+ 
+  - platform: ezo
+    name: "orp"
+    id: orp_ezo
+    address: 98
+    unit_of_measurement: "mv"
+    accuracy_decimals: 0
+    update_interval: 60s
+    on_device_information:
+      then:
+      - lambda: |-
+          ESP_LOGI("main", "orp1_on_device_information %s", x.c_str());
+    on_led:
+      then:
+      - lambda: |-
+          ESP_LOGI("main", "orp1_on_led %d", x);
+    on_slope:
+      - lambda: |-
+          ESP_LOGI("main", "orp1_on_slope %s", x.c_str());
+    on_calibration:
+      then:
+      - lambda: |-
+          ESP_LOGI("main", "orp1_on_calibration %s", x.c_str());
+    on_t:
+      then:
+      - lambda: |-
+          ESP_LOGI("main", "orp1_on_t %s", x.c_str());
+    on_custom:
+      then:
+      - lambda: |-
+          ESP_LOGI("main", "orp1_on_custom %s", x.c_str());      
+
+        
+  - platform: ezo
+    name: "temp"
+    id: temp_ezo
+    address: 102
+    unit_of_measurement: "C"    
+    accuracy_decimals: 2
+    update_interval: 60s
+    on_value:
+      then: 
+
+        - lambda: id(ph_ezo).set_tempcomp_value(id(temp_ezo).state );
+        - lambda: id(orp_ezo).set_tempcomp_value(id(temp_ezo).state );   
+  - platform: ezo_pmp
+    id: ezo_cl_pmp
+    total_volume_dosed:
+      id: total_cl_volume_dosed
+      name: Total Clorine Volume Dosed
+  - platform: ezo_pmp
+    id: ezo_cl_pmp  
+    absolute_total_volume_dosed:
+      id: absolute_cl_total_volume_dosed
+      name: Absolute Clorine Total Volume Dosed   
+  - platform: ezo_pmp
+    id: ezo_cl_pmp  
+    last_volume_requested:
+      id: last_cl_volume_requested
+      name: Last Clorine Volume Requested
+  - platform: ezo_pmp
+    id: ezo_cl_pmp  
+    max_flow_rate:
+      id: max_cl_flow_rate
+      name: Max Clorine Flow Rate    
+  - platform: ezo_pmp
+    id: ezo_cl_pmp  
+    pump_voltage:
+      id: pump_cl_voltage
+      name: Pump Clorine Voltage    
+
+
+  - platform: ezo_pmp
+    id: ezo_acid_pmp
+    total_volume_dosed:
+      id: total_acid_volume_dosed
+      name: Total Acid Volume Dosed
+  - platform: ezo_pmp
+    id: ezo_acid_pmp  
+    absolute_total_volume_dosed:
+      id: absolute_acid_total_volume_dosed
+      name: Absolute Acid Total Volume Dosed   
+  - platform: ezo_pmp
+    id: ezo_acid_pmp  
+    last_volume_requested:
+      id: last_acid_volume_requested
+      name: Last Acid Volume Requested
+  - platform: ezo_pmp
+    id: ezo_acid_pmp  
+    max_flow_rate:
+      id: max_acid_flow_rate
+      name: Max Acid Flow Rate    
+  - platform: ezo_pmp
+    id: ezo_acid_pmp  
+    pump_voltage:
+      id: pump_acid_voltage
+      name: Pump Acid Voltage  
+
+
+  - platform: wifi_signal
+    name: "${devicename} - Wifi Signal"
+    update_interval: 60s
+    icon: mdi:wifi
+
+  - platform: uptime
+    name: "${devicename} - Uptime"
+    update_interval: 60s
+    icon: mdi:clock-outline
+
+binary_sensor:
+  - platform: ezo_pmp
+    id: ezo_cl_pmp  
+    pump_state:
+      id: pump_cl_state
+      name: Pump Clorine State      
+  - platform: ezo_pmp
+    id: ezo_cl_pmp  
+    is_paused:
+      id: is_cl_paused
+      name: Is Clorine Paused      
+
+  - platform: ezo_pmp
+    id: ezo_acid_pmp  
+    pump_state:
+      id: pump_acid_state
+      name: Pump Acid State      
+  - platform: ezo_pmp
+    id: ezo_acid_pmp  
+    is_paused:
+      id: is_acid_paused
+      name: Is Acid Paused   
+
+text_sensor:
+  - platform: ezo_pmp
+    id: ezo_cl_pmp  
+    dosing_mode:
+      id: dosing_mode
+      name: Dosing Mode 
+  - platform: ezo_pmp
+    id: ezo_cl_pmp  
+    calibration_status:
+      id: calibration_status
+      name: Calibration Status          
+
+  - platform: ezo_pmp
+    id: ezo_acid_pmp  
+    dosing_mode:
+      id: dosing_acid_mode
+      name: Dosing Acid Mode 
+  - platform: ezo_pmp
+    id: ezo_acid_pmp  
+    calibration_status:
+      id: calibration_acid_status
+      name: Calibration Acid Status          
+
+  - platform: wifi_info
+    ip_address:
+      name: "${devicename} - IP Address"
+    ssid:
+      name: "${devicename} - Wi-Fi SSID"
+    bssid:
+      name: "${devicename} - Wi-Fi BSSID"
+  - platform: version
+    name: "${devicename} - ESPHome Version"
+    hide_timestamp: true  
+
+number:
+  - platform: template
+    id: volumecl
+    name: "Volume Cl"
+    optimistic: true
+    min_value: 0
+    max_value: 100
+    step: 0.01
+  - platform: template
+    id: durationcl
+    name: "Duration Cl"
+    optimistic: true
+    min_value: 0
+    max_value: 100
+    step: 1
+  - platform: template
+    id: volumeacid
+    name: "Volume Acid"
+    optimistic: true
+    min_value: 0
+    max_value: 100
+    step: 0.01
+  - platform: template
+    id: durationacid
+    name: "Duration Acid"
+    optimistic: true
+    min_value: 0
+    max_value: 100
+    step: 1    
+button:
+  - platform: template
+    id: button_dose_cl_over_time
+    name: "Dose Clorine Over Time"
+    on_press:
+      if:
+        condition:
+          lambda: return id(pump_acid_state).state == true;
+        then:
+          - logger.log: "Acid pump is running. Clorine pumping will be skipped."
+        else:      
+          - ezo_pmp.dose_volume_over_time:
+              id: ezo_cl_pmp
+              volume: !lambda |-
+                return id(volumecl).state;
+              duration: !lambda |-
+                return id(durationcl).state;
+  - platform: template
+    id: button_dose_50_ml_cl_over_time
+    name: "Dose 50 mlClorine Over Time"
+    on_press:
+      if:
+        condition:
+          lambda: return id(pump_acid_state).state == true;
+        then:
+          - logger.log: "Acid pump is running. Clorine pumping will be skipped."
+        else:      
+          - ezo_pmp.dose_volume_over_time:
+              id: ezo_cl_pmp
+              volume: !lambda |-
+                return 50;
+              duration: !lambda |-
+                return 1;                
+  - platform: template
+    id: button_stop_cl_pump
+    name: "Stop Cl Pump"
+    on_press:
+      - ezo_pmp.stop_dosing:
+         id: ezo_cl_pmp                    
+  - platform: template
+    id: button_dose_acid_over_time
+    name: "Dose Acid Over Time"
+    on_press:
+      if:
+        condition:
+          lambda: return id(pump_cl_state).state == true;
+        then:
+          - logger.log: "Chlorine pump is running. Acid pumping will be skipped."
+        else:      
+         - ezo_pmp.dose_volume_over_time:
+            id: ezo_acid_pmp
+            volume: !lambda |-
+                  return id(volumeacid).state;
+            duration: !lambda |-
+                  return id(durationacid).state;   
+  - platform: template
+    id: button_dose_50_ml_acid_over_time
+    name: "Dose 50 ml Acid Over Time"
+    on_press:
+      if:
+        condition:
+          lambda: return id(pump_cl_state).state == true;
+        then:
+          - logger.log: "Chlorine pump is running. Acid pumping will be skipped."
+        else:      
+         - ezo_pmp.dose_volume_over_time:
+            id: ezo_acid_pmp
+            volume: !lambda |-
+                  return 50;
+            duration: !lambda |-
+                  return 1;                     
+  - platform: template
+    id: button_stop_Acid_pump
+    name: "Stop Acid Pump"
+    on_press:
+      - ezo_pmp.stop_dosing:
+         id: ezo_acid_pmp       
+  - platform: template
+    id: button_dose_minus_50_ml_cl_over_time
+    name: "Clean-chlorine-tubing"
+    on_press:
+      if:
+        condition:
+          lambda: return id(pump_cl_state).state == true;
+        then:
+          - logger.log: "Chlorine pump is running. Cl pumping will be skipped."
+        else:      
+         - ezo_pmp.dose_volume_over_time:
+            id: ezo_cl_pmp
+            volume: -50
+            duration: 1
+          
+  - platform: template
+    id: button_dose_minus_50_ml_acid_over_time
+    name: "Clean-acid-tubing"
+    on_press:
+      if:
+        condition:
+          lambda: return id(pump_acid_state).state == true;
+        then:
+          - logger.log: "Acid pump is running. Cl pumping will be skipped."
+        else:      
+         - ezo_pmp.dose_volume_over_time:
+            id: ezo_acid_pmp
+            volume: -50
+            duration: 1
+  - platform: template
+    id: button_change_cl_to_acid_address
+    name: "Change Cl to Acid Address"
+#    on_press:
+#      - ezo_pmp.change_i2c_address:
+#          id: ezo_cl_pmp
+#          address: 104                   
+
+  - platform: template
+    name: "Clear PH Calibration" 
+    id: ph_calibrate_clear
+    on_press:
+      then: 
+        - lambda: id(ph_ezo).clear_calibration();
+  - platform: template
+    name: "PH 7 Calibrate" 
+    id: ph_calibrate_7
+    on_press:
+      then: 
+        - lambda: id(ph_ezo).set_calibration_point_mid(7.00);
+  - platform: template
+    name: "PH 10 Calibrate" 
+    id: ph_calibrate_10
+    on_press:
+      then: 
+        - lambda: id(ph_ezo).set_calibration_point_high(10.00);
+  - platform: template
+    name: "PH 4 Calibrate" 
+    id: ph_calibrate_4
+    on_press:
+      then: 
+        - lambda: id(ph_ezo).set_calibration_point_low(4.00);   
+
+  - platform: template
+    name: "Clear Orp Calibration" 
+    id: orp_calibrate_clear
+    on_press:
+      then: 
+        - lambda: id(orp_ezo).clear_calibration();        
+  - platform: template
+    name: "Orp 225 Calibrate" 
+    id: orp_calibrate_225
+    on_press:
+      then: 
+        - lambda: id(orp_ezo).set_calibration_generic(225.00);
+  - platform: template
+    name: "Get pH Calibration"
+    on_press:
+      - lambda: |-
+          id(ph_ezo).get_calibration();   
+  - platform: template
+    name: "Get orp Calibration"
+    on_press:
+      - lambda: |-
+          id(orp_ezo).get_calibration();              
+  - platform: template
+    name: "Get pH Sensor Info"
+    on_press:
+      - lambda: |-
+          id(ph_ezo).get_device_information();     
+  - platform: template
+    name: "Get pH Temp Compensation"
+    on_press:
+      - lambda: |-
+          id(ph_ezo).get_t();   
+  - platform: template
+    name: "Get pH Slope"
+    on_press:
+      - lambda: |-
+          id(ph_ezo).get_slope();       
+  - platform: template
+    name: "Get orp Slope"
+    on_press:
+      - lambda: |-
+          id(orp_ezo).get_slope();             
+  - platform: template
+    name: "Update pH"
+    id: phUpdate
+    icon: "mdi:ph"
+    on_press:
+      - lambda: |-
+          id(ph_ezo).get_state();          
+  - platform: template
+    name: "Custom pH"
+    id: phCustom
+    icon: "mdi:ph"
+    on_press:
+      - lambda: |-
+          id(ph_ezo).send_custom("Status");         
+  - platform: template
+    name: "Custom orp"
+    id: orpCustom
+    icon: "mdi:ph"
+    on_press:
+      - lambda: |-
+          id(orp_ezo).send_custom("Status");                         
+switch:
+  - platform: gpio
+    pin: 12
+    name: "pH On"
+    inverted: yes  #Makes the ON status turn the pin LOW
+    internal: true  #Hides the switch from Home Assistant so as not to clutter the interface
+    restore_mode: ALWAYS_ON  #Sets the switch status ON at boot
+    
+  - platform: gpio
+    pin: 15
+    name: "Temp On"
+    inverted: no  #This pin needs to be HIGH, so not inverted
+    internal: true #Hides the switch from Home Assistant so as not to clutter the interface
+    restore_mode: ALWAYS_ON  #Sets the switch status ON at boot
+    
+  - platform: gpio
+    pin: 27
+    name: "ORP On"
+    inverted: yes   #Makes the ON status turn the pin LOW
+    internal: true #Hides the switch from Home Assistant so as not to clutter the interface
+    restore_mode: ALWAYS_ON  #Sets the switch status ON at boot

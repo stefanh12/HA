@@ -1,1 +1,1 @@
-
+The IVT vbx box can be speed controlled by changing the voltage to the fan. The different voltages are hardwired in the transformer. The speed controll can be done with other IVT products, like the IVT490/495

@@ -2,7 +2,7 @@
 # https://github.com/strandborg/AlsavoCtrl
 # https://www.pooltime.se/produkt/poolvarmepump-brilix-xhpfdplus100-9kw-r32/
 
-# This is code is beta and is under testing! Settings are not working!
+# This is code is beta and is under testing!
 
 substitutions:
   name_prefix: Brilix Heat Pump
@@ -26,10 +26,7 @@ esp32:
 logger:
   baud_rate: 0
 
-#web_server:
-#  port: 80
 
-#prometheus:
 
 wifi:
   ssid: !secret wifi__iot2_ssid
@@ -38,7 +35,6 @@ wifi:
     static_ip: 192.168.2.251
     gateway: 192.168.2.1
     subnet: 255.255.255.0
-  #fast_connect: true
   enable_btm: true
   enable_rrm: true
 
@@ -53,7 +49,6 @@ api:
 ota:
   - platform: esphome
     password: !secret ota_password
-
 
 
 
@@ -100,241 +95,138 @@ modbus_controller:
   - id: heatpump
     address: 2
     modbus_id: c_modbus
-    update_interval: 60s
+    update_interval: 20s
  
+
+interval:
+   - interval: 10s
+     then:
+      - lambda: |-
+         if (id(brillix_power_setting).state) {
+          id(brillix_power_setting).turn_on();
+         } else {
+          id(brillix_power_setting).turn_off();
+         }
+         ESP_LOGI("modbus", "Re-sending coil state: %s", id(brillix_power_setting).state ? "ON" : "OFF");
+         // triggers a write_lamdba
+         id(brilix_holding_write).turn_on();
+      
+
 
 #Turn on
 #02 0F 00 00 00 10 02 05 00 F5 80
 #turn off
 #02 0F 00 00 00 10 02 04 00 F4 10
-
-#
-
-
-# not working, read is not supported
+# Sets all coils when setting on or off
 switch:
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} Power
+    id: brillix_power_setting
     register_type: coil
     address: 0
+#    internal: true
     use_write_multiple: true
-    restore_mode: ALWAYS_OFF
+    restore_mode: RESTORE_DEFAULT_OFF
+    write_lambda: |-
+      bool on = x == 1;
+      payload.push_back(0x02); 
+      payload.push_back(0x0F); 
+      payload.push_back(0x00); 
+      payload.push_back(0x00); 
+      payload.push_back(0x00);
+      payload.push_back(0x10);
+      payload.push_back(0x02);                 
+      if (on)
+        payload.push_back(0x05); // on
+      else
+        payload.push_back(0x04); // off
+      payload.push_back(0x00); 
+      return on;
 
+# write to the holding registers all att once from the templates
   - platform: modbus_controller
     modbus_controller_id: heatpump
-    name: ${name_prefix} unknown1
-    register_type: coil
-    address: 1
-    use_write_multiple: true
-    restore_mode: ALWAYS_OFF
+    id: brilix_holding_write
+    register_type: holding
+    internal: true
+    address: 0
+    write_lambda: |-
+      bool on = x == 1;
+      uint32_t setpoint = id(brilix_setpoint).state * 10;
+      uint32_t tmpvalue = 0;
+      int mode = 0;
+      std::string modestr = id(brilix_set_mode_template).state;
+      payload.push_back(0x02); 
+      payload.push_back(0x10); 
+      payload.push_back(0x00); 
+      payload.push_back(0x00); 
+      payload.push_back(0x00);
+      payload.push_back(0x0A);
+      payload.push_back(0x14);
+      payload.push_back((setpoint >> 16) & 0xFFFF);
+      payload.push_back(setpoint & 0xFFFF);
+      payload.push_back((setpoint >> 16) & 0xFFFF);
+      payload.push_back(setpoint & 0xFFFF);
+      payload.push_back((setpoint >> 16) & 0xFFFF);
+      payload.push_back(setpoint & 0xFFFF);
+      // unknown
+      payload.push_back(0x00);
+      payload.push_back(0x00);
+      payload.push_back(0x00);      
+      payload.push_back(0x00);
+      payload.push_back(0x00);
+      payload.push_back(0x00);
+      // mode
+      if (modestr == "Silent") {
+        mode = 1;
+      } else if (modestr == "Smart") {
+        mode = 2;
+      } else if (modestr == "Powerfull") {
+        mode = 3;
+        } else {
+        mode = 2;
+      }
+      payload.push_back((mode >> 16) & 0xFFFF);
+      payload.push_back(mode & 0xFFFF);     
+      // 50
+      tmpvalue = 50;
+      payload.push_back((tmpvalue >> 16) & 0xFFFF);
+      payload.push_back(tmpvalue & 0xFFFF);     
+      // 350
+      tmpvalue = 350;
+      payload.push_back((tmpvalue >> 16) & 0xFFFF); 
+      payload.push_back(tmpvalue & 0xFFFF);      
+      // 500
+      tmpvalue = 500;
+      payload.push_back((tmpvalue >> 16) & 0xFFFF);
+      payload.push_back(tmpvalue & 0xFFFF);   
+      ESP_LOGI("modbus", "Re-sending holding states");
+      return x;
 
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown2
-    register_type: coil
-    address: 2
-    use_write_multiple: true 
-    restore_mode: ALWAYS_ON
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown3
-    register_type: coil
-    address: 3
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown4
-    register_type: coil
-    address: 4
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown5
-    register_type: coil
-    address: 5
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown6
-    register_type: coil
-    address: 6
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-    
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown7
-    register_type: coil
-    address: 7
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown8
-    register_type: coil
-    address: 8
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown9
-    register_type: coil
-    address: 9
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown10
-    register_type: coil
-    address: 10
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown11
-    register_type: coil
-    address: 11
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown12
-    register_type: coil
-    address: 12
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown13
-    register_type: coil
-    address: 13
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown14
-    register_type: coil
-    address: 14
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown15
-    register_type: coil
-    address: 15
-    use_write_multiple: true 
-    restore_mode: ALWAYS_OFF
 
 number:
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} Heat Setpoint
-    unit_of_measurement: "°C"
-    device_class: temperature
-    address: 0
-    value_type: U_WORD
-    min_value: 18  # docs say 12
+  - platform: template
+    name: "${name_prefix} Setpoint"
+    id: brilix_setpoint
     max_value: 40
-    lambda: "return (x * 0.1);"
-    write_lambda: "return (x * 10);"  
-    use_write_multiple: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} Cool Setpoint
-    unit_of_measurement: "°C"
-    device_class: temperature
-    address: 1
-    use_write_multiple: true
-    value_type: U_WORD
-    min_value: 18  # docs say 12
-    max_value: 40
-    lambda: "return (x * 0.1);"
-    write_lambda: "return (x * 10);"  
-       
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} Auto Setpoint
-    unit_of_measurement: "°C"
-    device_class: temperature
-    address: 2
-    use_write_multiple: true
-    value_type: U_WORD
-    min_value: 18  # docs say 12
-    max_value: 40
-    lambda: "return (x * 0.1);"
-    write_lambda: "return (x * 10);"  
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown3
-    register_type: holding
-    use_write_multiple: true
-    address: 3
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown4
-    register_type: holding
-    use_write_multiple: true
-    address: 4
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown5
-    register_type: holding
-    use_write_multiple: true
-    address: 5
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown7
-    register_type: holding
-    use_write_multiple: true
-    address: 7
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown8
-    register_type: holding
-    use_write_multiple: true
-    address: 8   
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown9
-    register_type: holding
-    use_write_multiple: true
-    address: 9
-
+    min_value: 18
+    step: 0.5
+    optimistic: True
+    initial_value: 30
+    restore_value: true
+  
 select:
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
+  - platform: template
     name: ${name_prefix} Working mode
-    address: 6
-    value_type: U_WORD
-#    register_type: holding
-    use_write_multiple: true
-    optionsmap:
-      'Silent': 0
-      'Smart': 1
-      'Powerfull': 2
+    id: brilix_set_mode_template
+    optimistic: true
+    options:
+     - "Silent"
+     - "Smart"
+     - "Powerfull"
+    initial_option: "Smart"
+    restore_value: True
 
 
 # Read on/off
@@ -796,6 +688,4 @@ sensor:
     register_type: read
     address: 16
     value_type: S_WORD 
-              
-
               

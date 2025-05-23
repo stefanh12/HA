@@ -2,8 +2,7 @@
 # https://github.com/strandborg/AlsavoCtrl
 # https://www.pooltime.se/produkt/poolvarmepump-brilix-xhpfdplus100-9kw-r32/
 
-# This is code is beta and is under testing!
-
+# This is code is beta and is under testing! Settings are not working!
 
 substitutions:
   name_prefix: Brilix Heat Pump
@@ -55,14 +54,7 @@ ota:
   - platform: esphome
     password: !secret ota_password
 
-light:
-  - platform: esp32_rmt_led_strip
-    rgb_order: GRB
-    pin: GPIO4
-    num_leds: 1
-#    rmt_channel: 0
-    chipset: ws2812
-    name: "RGB Indicator"
+
 
 
 output:
@@ -109,453 +101,145 @@ modbus_controller:
     address: 2
     modbus_id: c_modbus
     update_interval: 60s
+ 
 
+#Turn on
+#02 0F 00 00 00 10 02 05 00 F5 80
+#turn off
+#02 0F 00 00 00 10 02 04 00 F4 10
+
+#
+
+
+# not working, read is not supported
 switch:
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} Power
     register_type: coil
     address: 0
+    use_write_multiple: true
+    restore_mode: ALWAYS_OFF
+
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown1
     register_type: coil
     address: 1
-    disabled_by_default: true
+    use_write_multiple: true
+    restore_mode: ALWAYS_OFF
+
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown2
     register_type: coil
     address: 2
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_ON
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown3
     register_type: coil
     address: 3
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown4
     register_type: coil
     address: 4
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown5
     register_type: coil
     address: 5
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown6
     register_type: coil
     address: 6
-    disabled_by_default: true
-
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
+    
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown7
     register_type: coil
     address: 7
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown8
     register_type: coil
     address: 8
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown9
     register_type: coil
     address: 9
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown10
     register_type: coil
     address: 10
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown11
     register_type: coil
     address: 11
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown12
     register_type: coil
     address: 12
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown13
     register_type: coil
     address: 13
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown14
     register_type: coil
     address: 14
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} unknown15
     register_type: coil
     address: 15
-    disabled_by_default: true
-
-# Read on/off
-binary_sensor:
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unnown0
-    register_type: discrete_input
-    address: 0
-    disabled_by_default: true
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown1
-    register_type: discrete_input
-    address: 1
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown2
-    register_type: discrete_input
-    address: 2
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} Water Flow
-    register_type: discrete_input
-    address: 2
-    disabled_by_default: false
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown4
-    register_type: discrete_input
-    address: 4
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown5
-    register_type: discrete_input
-    address: 5
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown6
-    register_type: discrete_input
-    address: 6
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown7
-    register_type: discrete_input
-    address: 7
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown8
-    register_type: discrete_input
-    address: 8
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown9
-    register_type: discrete_input
-    address: 9
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown10
-    register_type: discrete_input
-    address: 10
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown11
-    register_type: discrete_input
-    address: 11
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown12
-    register_type: discrete_input
-    address: 12
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown13
-    register_type: discrete_input
-    address: 13
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown14
-    register_type: discrete_input
-    address: 14
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown15
-    register_type: discrete_input
-    address: 15
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown16
-    register_type: discrete_input
-    address: 16
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown17
-    register_type: discrete_input
-    address: 17
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown18
-    register_type: discrete_input
-    address: 18
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown19
-    register_type: discrete_input
-    address: 19
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown20
-    register_type: discrete_input
-    address: 20
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown21
-    register_type: discrete_input
-    address: 21
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown22
-    register_type: discrete_input
-    address: 22
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown23
-    register_type: discrete_input
-    address: 23
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown24
-    register_type: discrete_input
-    address: 24
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown25
-    register_type: discrete_input
-    address: 25
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown26
-    register_type: discrete_input
-    address: 26
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown27
-    register_type: discrete_input
-    address: 27
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown28
-    register_type: discrete_input
-    address: 28
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown29
-    register_type: discrete_input
-    address: 29
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown30
-    register_type: discrete_input
-    address: 30
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown31
-    register_type: discrete_input
-    address: 31
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown32
-    register_type: discrete_input
-    address: 32
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown33
-    register_type: discrete_input
-    address: 33
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown34
-    register_type: discrete_input
-    address: 34
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown35
-    register_type: discrete_input
-    address: 35
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown36
-    register_type: discrete_input
-    address: 36
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown37
-    register_type: discrete_input
-    address: 37
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown38
-    register_type: discrete_input
-    address: 38
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown39
-    register_type: discrete_input
-    address: 39
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} Power Status
-    register_type: discrete_input
-    address: 40
-    disabled_by_default: false
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} Power Status2
-    register_type: discrete_input
-    address: 41
-    disabled_by_default: false
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown42
-    register_type: discrete_input
-    address: 42
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown43
-    register_type: discrete_input
-    address: 43
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown44
-    register_type: discrete_input
-    address: 44
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown45
-    register_type: discrete_input
-    address: 45
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown46
-    register_type: discrete_input
-    address: 46
-    disabled_by_default: true
-
-  - platform: modbus_controller
-    modbus_controller_id: heatpump
-    name: ${name_prefix} unknown47
-    register_type: discrete_input
-    address: 47
-    disabled_by_default: true
+    use_write_multiple: true 
+    restore_mode: ALWAYS_OFF
 
 number:
   - platform: modbus_controller
@@ -564,49 +248,392 @@ number:
     unit_of_measurement: "°C"
     device_class: temperature
     address: 0
-    force_new_range: true
     value_type: U_WORD
     min_value: 18  # docs say 12
     max_value: 40
     lambda: "return (x * 0.1);"
     write_lambda: "return (x * 10);"  
+    use_write_multiple: true
+
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} Cool Setpoint
     unit_of_measurement: "°C"
     device_class: temperature
     address: 1
-    force_new_range: true
+    use_write_multiple: true
     value_type: U_WORD
     min_value: 18  # docs say 12
     max_value: 40
     lambda: "return (x * 0.1);"
     write_lambda: "return (x * 10);"  
-    disabled_by_default: true  
+       
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} Auto Setpoint
     unit_of_measurement: "°C"
     device_class: temperature
     address: 2
-    force_new_range: true
+    use_write_multiple: true
     value_type: U_WORD
     min_value: 18  # docs say 12
     max_value: 40
     lambda: "return (x * 0.1);"
     write_lambda: "return (x * 10);"  
-    disabled_by_default: true     
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown3
+    register_type: holding
+    use_write_multiple: true
+    address: 3
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown4
+    register_type: holding
+    use_write_multiple: true
+    address: 4
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown5
+    register_type: holding
+    use_write_multiple: true
+    address: 5
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown7
+    register_type: holding
+    use_write_multiple: true
+    address: 7
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown8
+    register_type: holding
+    use_write_multiple: true
+    address: 8   
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown9
+    register_type: holding
+    use_write_multiple: true
+    address: 9
+
 select:
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: ${name_prefix} Working mode
     address: 6
     value_type: U_WORD
+#    register_type: holding
+    use_write_multiple: true
     optionsmap:
       'Silent': 0
       'Smart': 1
       'Powerfull': 2
 
+
+# Read on/off
+# modbus send and response OK
+binary_sensor:
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unnown0
+    register_type: discrete_input
+    address: 0
+  
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown1
+    register_type: discrete_input
+    address: 1
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} Water Flow
+    register_type: discrete_input
+    address: 2
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown3
+    register_type: discrete_input
+    address: 3
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown4
+    register_type: discrete_input
+    address: 4
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown5
+    register_type: discrete_input
+    address: 5
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown6
+    register_type: discrete_input
+    address: 6
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown7
+    register_type: discrete_input
+    address: 7
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown8
+    register_type: discrete_input
+    address: 8
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown9
+    register_type: discrete_input
+    address: 9
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown10
+    register_type: discrete_input
+    address: 10
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown11
+    register_type: discrete_input
+    address: 11
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown12
+    register_type: discrete_input
+    address: 12
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown13
+    register_type: discrete_input
+    address: 13
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown14
+    register_type: discrete_input
+    address: 14
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown15
+    register_type: discrete_input
+    address: 15
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown16
+    register_type: discrete_input
+    address: 16
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown17
+    register_type: discrete_input
+    address: 17
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown18
+    register_type: discrete_input
+    address: 18
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown19
+    register_type: discrete_input
+    address: 19
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown20
+    register_type: discrete_input
+    address: 20
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown21
+    register_type: discrete_input
+    address: 21
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown22
+    register_type: discrete_input
+    address: 22
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown23
+    register_type: discrete_input
+    address: 23
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown24
+    register_type: discrete_input
+    address: 24
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown25
+    register_type: discrete_input
+    address: 25
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown26
+    register_type: discrete_input
+    address: 26
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown27
+    register_type: discrete_input
+    address: 27
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown28
+    register_type: discrete_input
+    address: 28
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown29
+    register_type: discrete_input
+    address: 29
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown30
+    register_type: discrete_input
+    address: 30
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown31
+    register_type: discrete_input
+    address: 31
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown32
+    register_type: discrete_input
+    address: 32
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown33
+    register_type: discrete_input
+    address: 33
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown34
+    register_type: discrete_input
+    address: 34
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown35
+    register_type: discrete_input
+    address: 35
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown36
+    register_type: discrete_input
+    address: 36
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown37
+    register_type: discrete_input
+    address: 37
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown38
+    register_type: discrete_input
+    address: 38
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown39
+    register_type: discrete_input
+    address: 39
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} Power Status
+    register_type: discrete_input
+    address: 40
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} Power Status2
+    register_type: discrete_input
+    address: 41
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown42
+    register_type: discrete_input
+    address: 42
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown43
+    register_type: discrete_input
+    address: 43
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown44
+    register_type: discrete_input
+    address: 44
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown45
+    register_type: discrete_input
+    address: 45
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown46
+    register_type: discrete_input
+    address: 46
+
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: ${name_prefix} unknown47
+    register_type: discrete_input
+    address: 47
+
+
+
+
+
+
+# modbus send and response OK
 
 sensor:
   - platform: modbus_controller
@@ -615,8 +642,7 @@ sensor:
     unit_of_measurement: '°C'
     register_type: read
     address: 0
-#    force_new_range: true
-    value_type: S_WORD
+    value_type: U_WORD
     device_class: temperature
     filters:
       - multiply: 0.1
@@ -627,7 +653,6 @@ sensor:
     unit_of_measurement: '°C'
     register_type: read
     address: 1
-#    force_new_range: true
     value_type: S_WORD
     device_class: temperature
     filters:
@@ -639,7 +664,6 @@ sensor:
     unit_of_measurement: '°C'
     register_type: read
     address: 2
-#    force_new_range: true
     value_type: S_WORD
     device_class: temperature
     filters:
@@ -651,7 +675,6 @@ sensor:
     unit_of_measurement: '°C'
     register_type: read
     address: 3
-#    force_new_range: true
     value_type: S_WORD
     device_class: temperature
     filters:
@@ -663,7 +686,6 @@ sensor:
     unit_of_measurement: '°C'
     register_type: read
     address: 4
-#    force_new_range: true
     value_type: S_WORD
     device_class: temperature
     filters:
@@ -675,7 +697,6 @@ sensor:
     unit_of_measurement: '°C'
     register_type: read
     address: 5
-#    force_new_range: true
     value_type: S_WORD
     device_class: temperature
     filters:
@@ -684,10 +705,8 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: EEV actual
-    unit_of_measurement: RPM
     register_type: read
     address: 6
-#    force_new_range: true
     value_type: S_WORD
     accuracy_decimals: 0  
   - platform: modbus_controller
@@ -696,7 +715,6 @@ sensor:
     unit_of_measurement: RPM
     register_type: read
     address: 7
-#    force_new_range: true
     value_type: S_WORD
     device_class: temperature
     filters:
@@ -707,7 +725,6 @@ sensor:
     name: IPM
     register_type: read
     address: 8
-#    force_new_range: true
     value_type: S_WORD
     device_class: temperature
     filters:
@@ -719,7 +736,6 @@ sensor:
     unit_of_measurement: '%'
     register_type: read
     address: 9
-#    force_new_range: true
     value_type: S_WORD
     filters:
       - calibrate_linear: 
@@ -732,7 +748,6 @@ sensor:
     unit_of_measurement: 'A'
     register_type: read
     address: 10
-#    force_new_range: true
     value_type: S_WORD
     device_class: Current
     filters:
@@ -741,33 +756,24 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: unknown11
-    unit_of_measurement: 'Hz'
     register_type: read
     address: 11
-#    force_new_range: true
     value_type: S_WORD
     device_class: Frequency
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: unknown12
-    unit_of_measurement: 'Hz'
     register_type: read
     address: 12
-#    force_new_range: true
     value_type: S_WORD
     device_class: Frequency  
-#    filters:
-#      - calibrate_linear: 
-#        - 0.0 -> 0
-#        - 1 -> 40
-#        - 5 -> 82      
+   
   - platform: modbus_controller
     modbus_controller_id: heatpump
     name: unknown13
 
     register_type: read
     address: 13
-#    force_new_range: true
     value_type: S_WORD
   - platform: modbus_controller
     modbus_controller_id: heatpump
@@ -775,7 +781,6 @@ sensor:
 
     register_type: read
     address: 14
-#    force_new_range: true
     value_type: S_WORD 
   - platform: modbus_controller
     modbus_controller_id: heatpump
@@ -783,7 +788,14 @@ sensor:
 
     register_type: read
     address: 15
-#    force_new_range: true
     value_type: S_WORD 
+  - platform: modbus_controller
+    modbus_controller_id: heatpump
+    name: unknown16
+
+    register_type: read
+    address: 16
+    value_type: S_WORD 
+              
 
               

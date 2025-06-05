@@ -5,6 +5,8 @@
 
 
 # This is code is beta and is under testing!
+# On / Off, silent, smart, powerfull, set temperature is working
+# water temp in and out is working
 
 substitutions:
   name_prefix: Brilix Heat Pump

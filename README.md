@@ -1,5 +1,5 @@
 # home assistant and esphome configurations.
-Collection of esphome and Node Red configurations for Home Assistant
+Collection of esphome and Node Red configurations for Home Assistant that I use to make my life easier
 # vinden Temp
 
 📌 Vinden Risk Sensor for ESPHome

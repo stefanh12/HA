@@ -1,0 +1,155 @@
+substitutions:
+  devicename: "vinden-temp"
+  devicenamefriendly: "vinden temp"
+  
+
+esphome:
+  name: $devicename
+  friendly_name:  $devicenamefriendly
+ 
+esp32:
+  board: az-delivery-devkit-v4
+
+wifi:
+  ssid: !secret wifi__iot2_ssid
+  password: !secret wifi_iot2_password
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  manual_ip:
+    static_ip: 192.168.2.247
+    gateway: 192.168.2.1
+    subnet: 255.255.255.0
+  ap:
+    ssid: $devicename
+    password: ${wifi_ap_password}
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_key_4
+  reboot_timeout: 1h
+ota:
+  - platform: esphome
+    password: !secret ota_key_4
+
+ 
+
+captive_portal:
+    
+
+# Example configuration entry
+
+   
+sensor:
+  - platform: dht
+    pin: GPIO22
+    temperature:
+      name: "Vinden Temperature"
+      id: vinden_temperature
+      accuracy_decimals: 1
+    humidity:
+      name: "Vinden Humidity"
+      id: vinden_humidity
+      accuracy_decimals: 1
+    update_interval: 60s
+    model: dht22
+  - platform: absolute_humidity
+    name: Vinden Absolute Humidity
+    id: vinden_absolut_humidity
+    temperature: vinden_temperature
+    humidity: vinden_humidity 
+  - platform: template
+    name: "Vinden Dew Point headroom"
+    lambda: |-
+      return (id(vinden_temperature).state - id(vinden_dew_point).state);
+    unit_of_measurement: °C
+    icon: 'mdi:thermometer-alert'         
+  - platform: template
+    name: "Vinden Dew Point"
+    id: vinden_dew_point
+    update_interval: 60s
+    lambda: |-
+      return (243.5*(log(id(vinden_humidity).state/100)+((17.67*id(vinden_temperature).state)/
+      (243.5+id(vinden_temperature).state)))/(17.67-log(id(vinden_humidity).state/100)-
+      ((17.67*id(vinden_temperature).state)/(243.5+id(vinden_temperature).state))));
+    unit_of_measurement: °C
+    icon: 'mdi:thermometer-alert'    
+    # Inspiration from https://www.byggahus.se/forum/threads/formel-for-riskkurva.311612
+    # x= vinden_humidity
+    # y= vinden_temperature
+    # formula y= 5/100000* x^4 - 0,0045* x^3 + 0,1652*x^2 - 2,9381*x + 97
+  - platform: template
+    name: "Vinden Risk"
+    id: vinden_risk
+    update_interval: 60s
+    icon: "mdi:water-alert"   # Added icon for moisture/risk
+    lambda: |-
+      float temp = id(vinden_temperature).state;  // Replace with your actual temperature sensor ID
+      float hum  = id(vinden_humidity).state; // Replace with your actual humidity sensor ID
+
+      const int mtab[51][4] = {
+        {0,0,0,0}, {0,97,98,100}, {0,95,97,100}, {0,93,95,100}, {0,91,93,98},
+        {0,88,92,97}, {0,87,91,96}, {0,86,91,95}, {0,84,90,95}, {0,83,89,94},
+        {0,82,88,93}, {0,81,88,93}, {0,81,88,92}, {0,80,87,92}, {0,79,87,92},
+        {0,79,87,91}, {0,79,86,91}, {0,79,86,91}, {0,79,86,90}, {0,79,85,90},
+        {0,79,85,90}, {0,79,85,90}, {0,79,85,89}, {0,79,84,89}, {0,79,84,89},
+        {0,79,84,89}, {0,79,84,89}, {0,79,83,88}, {0,79,83,88}, {0,79,83,88},
+        {0,79,83,88}, {0,79,83,88}, {0,79,83,88}, {0,79,82,88}, {0,79,82,87},
+        {0,79,82,87}, {0,79,82,87}, {0,79,82,87}, {0,79,82,87}, {0,79,82,87},
+        {0,79,82,87}, {0,79,81,87}, {0,79,81,87}, {0,79,81,87}, {0,79,81,87},
+        {0,79,81,86}, {0,79,81,86}, {0,79,81,86}, {0,79,80,86}, {0,79,80,86},
+        {0,79,80,86}
+      };
+      int rtemp = (int)round(temp);
+      int rhum  = (int)round(hum);
+      int mindex = 0;
+      if (rtemp <= 0 || rtemp > 50) {
+        mindex = 0;
+      } else {
+        for (int i = 1; i < 4; i++) {
+          if (rhum < mtab[rtemp][i]) {
+            mindex = i - 1;
+            break;
+          }
+          if (i == 3) {
+            mindex = 3;
+          }
+        }
+      }
+      return mindex;
+
+
+
+
+# Send WiFi signal strength & uptime to HA
+  - platform: wifi_signal
+    name: ${devicename} WiFi Strength
+    update_interval: 60s
+  - platform: uptime
+    name: ${devicename} "Uptime"         
+# Send IP Address to HA
+text_sensor:
+  - platform: template
+    name: "Vinden Risk Level"
+    id: vinden_risk_level
+    icon: "mdi:alert-circle"
+    update_interval: 60s
+    lambda: |-
+      int risk = (int)id(vinden_risk).state;
+      if (isnan(id(vinden_risk).state)) {
+        return {"Unknown"};
+      }
+
+      if (risk == 0) {
+        return {"Low"};
+      } else if (risk == 1) {
+        return {"Medium"};
+      } else if (risk == 2) {
+        return {"High"};
+      } else {
+        return {"Critical"};
+      }
+  - platform: wifi_info
+    ip_address:
+      name: ${devicename} IP Address      

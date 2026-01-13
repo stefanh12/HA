@@ -92,3 +92,13 @@ Reads pressure via ADS1115 on I²C.
 Converts raw voltage to PSI using linear calibration.
 Filters out noise and invalid readings.
 Includes Wi-Fi info and uptime sensors for diagnostics.
+
+# IVT
+🔌 IVT VBX Relay Controller (ESP8266)
+This ESPHome configuration controls a DollaTek 5V ESP8266 four-channel relay board via UART commands. It is designed for applications like IVT VBX ventilation control or other multi-voltage switching scenarios.
+✅ Features
+
+Mode Selector (0V, 115V, 135V, 150V, 180V) using a select component.
+Automatically switches relays based on selected mode.
+UART-based relay control with custom byte sequences.
+Includes Wi-Fi info and uptime sensors for diagnostics.

@@ -130,3 +130,48 @@ This ESPHome configuration controls a DollaTek 5V ESP8266 four-channel relay boa
 # IVT 490 Twin
 https://github.com/stefanh12/IVT_490_esphome
 
+# Garage port
+🚪 Garage Door Controller with Alarm Integration (ESPHome)
+This project configures an ESP8266-based Shelly 1 (or similar) to control a garage door opener using ESPHome, with added safety logic to prevent opening the door when the home alarm is armed.
+✅ Features
+
+- Garage Door Control
+Implements a cover entity in Home Assistant for open/close actions.
+Uses a relay to send a short pulse (0.5s) to the garage door opener.
+- Door State Detection
+Reads a contact sensor connected to the Shelly SW input to determine if the door is open or closed.
+- Alarm Integration
+Checks the state of a Home Assistant alarm entity (alarm_control_panel.verisure_alarm) before opening the door.
+If the alarm is armed, the open action is blocked, and an event is sent to Home Assistant.
+- Wi-Fi & OTA Updates
+Static IP configuration for reliable connectivity.
+OTA updates enabled for easy firmware management.
+
+
+
+
+✅ Safety Logic
+
+Open Action:
+
+- Only triggers if the alarm state is disarmed.
+Otherwise, logs a warning and sends an HA event (esphome.garageport_open_when_armed).
+
+
+Close Action:
+
+- Always allowed for security reasons.
+
+
+
+✅ Hardware Requirements
+
+- ESP8266 board (e.g., Shelly 1 or ESP-01)
+- Relay connected to GPIO4
+- Contact sensor connected to GPIO5
+
+✅ Home Assistant Integration
+
+- Creates a cover entity named Garage Door.
+- Uses device_class: garage for proper UI representation.
+- Integrates with Verisure alarm entity for conditional logic.

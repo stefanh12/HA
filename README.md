@@ -9,8 +9,8 @@ This project provides an ESPHome template sensor that calculates a risk index fo
 Calculates a risk level (0–3) based on temperature and humidity.
 Provides:
 
-Numeric sensor (vinden_risk) for automations.
-Text sensor (Vinden Risk Level) showing Low, Medium, High, or Critical.
+- Numeric sensor (vinden_risk) for automations.
+- Text sensor (Vinden Risk Level) showing Low, Medium, High, or Critical.
 
 
 Handles unavailable state gracefully by returning "Unavailable".
@@ -34,11 +34,11 @@ The auth token will need to be generated for your account, see https://labcom.cl
 ESPHome configuration for Atlas Scientific Wi-Fi Pool Kit with EZO dosing pumps for chlorine and acid.
 ✅ Features
 
-Monitors pH, ORP, and temperature sensors.
-Controls two EZO peristaltic pumps (chlorine & acid).
-Includes calibration buttons for pH and ORP sensors.
-Provides dosing controls (volume, duration, cleaning).
-Displays pump states, dosing modes, and calibration status.
+- Monitors pH, ORP, and temperature sensors.
+- Controls two EZO peristaltic pumps (chlorine & acid).
+- Includes calibration buttons for pH and ORP sensors.
+- Provides dosing controls (volume, duration, cleaning).
+- Displays pump states, dosing modes, and calibration status.
 
 ⚠ Important Note
 You may need to ground the system to earth for accurate pH readings:
@@ -58,23 +58,23 @@ This ESPHome configuration integrates with the BRILIX inverBOOST XHPFDPLUS 100 E
 
 Control Functions:
 
-Power On/Off
-Working modes: Silent, Smart, Powerfull
-Set temperature (18°C – 40°C)
+- Power On/Off
+- Working modes: Silent, Smart, Powerfull
+- Set temperature (18°C – 40°C)
 
 
 Readings:
 
-Water temperature (in/out)
-Ambient temperature
-Pipe temperatures
-Compressor speed, EEV actual, and other internal parameters
+- Water temperature (in/out)
+- Ambient temperature
+- Pipe temperatures
+- Compressor speed, EEV actual, and other internal parameters
 
 
 Modbus Communication:
 
-Custom write lambdas for coils and holding registers
-Periodic re-send of coil state for reliability
+- Custom write lambdas for coils and holding registers
+- Periodic re-send of coil state for reliability
 
 
 
@@ -88,10 +88,10 @@ This ESPHome configuration uses an analog pressure sensor, a logic level convert
 It helps determine when to backwash the filter or detect if the pump is running dry.
 ✅ Features
 
-Reads pressure via ADS1115 on I²C.
-Converts raw voltage to PSI using linear calibration.
-Filters out noise and invalid readings.
-Includes Wi-Fi info and uptime sensors for diagnostics.
+- Reads pressure via ADS1115 on I²C.
+- Converts raw voltage to PSI using linear calibration.
+- Filters out noise and invalid readings.
+- Includes Wi-Fi info and uptime sensors for diagnostics.
 
 # Pool Pump Vario
 ⚡ iSaver Pool Pump Speed Control (ESP32)
@@ -100,10 +100,10 @@ This ESPHome configuration controls an AquaForte/iSaver variable-speed pool pump
 
 Relay-based control for:
 
-pump on/off
-pump 1200 RPM
-pump 2400 RPM
-pump 2900 RPM
+- pump on/off
+- pump 1200 RPM
+- pump 2400 RPM
+- pump 2900 RPM
 
 
 Uses ESP32 GPIO pins for relay switching.
@@ -122,7 +122,7 @@ https://www.poolpowershop-forum.de/forum/thread/1145763-wie-steuert-man-eine-aqu
 This ESPHome configuration controls a DollaTek 5V ESP8266 four-channel relay board via UART commands. It is designed for applications like IVT VBX ventilation control or other multi-voltage switching scenarios.
 ✅ Features
 
-Mode Selector (0V, 115V, 135V, 150V, 180V) using a select component.
-Automatically switches relays based on selected mode.
-UART-based relay control with custom byte sequences.
-Includes Wi-Fi info and uptime sensors for diagnostics.
+- Mode Selector (0V, 115V, 135V, 150V, 180V) using a select component.
+- Automatically switches relays based on selected mode.
+- UART-based relay control with custom byte sequences.
+- Includes Wi-Fi info and uptime sensors for diagnostics.

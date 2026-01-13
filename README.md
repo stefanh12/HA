@@ -93,6 +93,30 @@ Converts raw voltage to PSI using linear calibration.
 Filters out noise and invalid readings.
 Includes Wi-Fi info and uptime sensors for diagnostics.
 
+# Pool Pump Vario
+⚡ iSaver Pool Pump Speed Control (ESP32)
+This ESPHome configuration controls an AquaForte/iSaver variable-speed pool pump using GPIO relays to select preset RPM speeds (e.g., 1200, 2400, 2900) and On/Off functionality.
+✅ Features
+
+Relay-based control for:
+
+pump on/off
+pump 1200 RPM
+pump 2400 RPM
+pump 2900 RPM
+
+
+Uses ESP32 GPIO pins for relay switching.
+Includes Wi-Fi info and uptime sensors for diagnostics.
+Compatible with Home Assistant automations.
+
+🔗 Hardware & Documentation
+
+https://www.allswimltd.com/pdf/iSAVER-Inverter-Instructions.pdf
+https://www.upesy.com/blogs/tutorials/esp32-pinout-reference-gpio-pins-ultimate-guide
+https://www.poolpowershop-forum.de/forum/thread/1145763-wie-steuert-man-eine-aqua-forte-1100-drehzahlregelung-extern-an/?pageNo=3
+
+
 # IVT
 🔌 IVT VBX Relay Controller (ESP8266)
 This ESPHome configuration controls a DollaTek 5V ESP8266 four-channel relay board via UART commands. It is designed for applications like IVT VBX ventilation control or other multi-voltage switching scenarios.

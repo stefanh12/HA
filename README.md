@@ -117,7 +117,7 @@ https://www.upesy.com/blogs/tutorials/esp32-pinout-reference-gpio-pins-ultimate-
 https://www.poolpowershop-forum.de/forum/thread/1145763-wie-steuert-man-eine-aqua-forte-1100-drehzahlregelung-extern-an/?pageNo=3
 
 
-# IVT
+# IVT Relay ventilation controller
 🔌 IVT VBX Relay Controller (ESP8266)
 This ESPHome configuration controls a DollaTek 5V ESP8266 four-channel relay board via UART commands. It is designed for applications like IVT VBX ventilation control or other multi-voltage switching scenarios.
 ✅ Features
@@ -126,3 +126,7 @@ This ESPHome configuration controls a DollaTek 5V ESP8266 four-channel relay boa
 - Automatically switches relays based on selected mode.
 - UART-based relay control with custom byte sequences.
 - Includes Wi-Fi info and uptime sensors for diagnostics.
+
+# IVT 490 Twin
+https://github.com/stefanh12/IVT_490_esphome
+

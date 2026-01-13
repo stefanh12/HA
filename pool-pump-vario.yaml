@@ -1,0 +1,141 @@
+# https://www.allswimltd.com/pdf/iSAVER-Inverter-Instructions.pdf
+# https://www.upesy.com/blogs/tutorials/esp32-pinout-reference-gpio-pins-ultimate-guide
+# https://www.poolpowershop-forum.de/forum/thread/1145763-wie-steuert-man-eine-aqua-forte-1100-drehzahlregelung-extern-an/?pageNo=3
+#Något är inställt där. Tror det är 1400 - 2000 - 2900 eller något sånt.
+#Du kan kontrollera och ändra det.
+#Tryck på båda piltangenterna.
+#Då är parameter 1 sugtiden (0-10 minuter)
+#2 är den lägsta hastigheten
+#3 är hastighet för D2
+#4 är hastighet för D3
+#5 är hastighet för D4
+#6 är hastighet för D1 sugtiden
+#Du kan hoppa vidare genom att trycka på de två piltangenterna
+# Koppling i iSaver
+# COM Vit / Brun
+# DI1 Vit / Orange On/off
+# DI2 Orange
+# DI3 Grön
+# DI4 Brun
+# A  Vit / Blå
+# B Blå
+
+# koppling till Reläer
+# K1 D4 brun 1200 RPm
+# K2 D3 Grön 2400 RPM
+# K3 D2 Orange 2900 RPM 
+# K4 D1 Vit /Orange On/off
+substitutions:
+  devicename: "pool-pump-vario"
+  # Higher value gives lower watt readout
+esphome:
+  name: $devicename
+  friendly_name: pool-pump-vario
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_key_3
+  reboot_timeout: 24h
+ota:
+  - platform: esphome
+    password: !secret ota_key_3
+
+wifi:
+  ssid: !secret wifi__iot2_ssid
+  password: !secret wifi_iot2_password
+  manual_ip:
+    static_ip: 192.168.2.245
+    gateway: 192.168.2.1
+    subnet: 255.255.255.0
+  reboot_timeout: 1h
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: $devicename
+    password: ${wifi_ap_password}
+uart:
+  id: mod_bus
+  tx_pin: 19
+  rx_pin: 18
+  baud_rate: 115200
+  stop_bits: 1
+
+modbus:
+  #flow_control_pin: 23
+  send_wait_time: 200ms
+  id: mod_bus_epever
+
+modbus_controller:
+  - id: epever
+    ## the Modbus device addr
+    address: 0x1
+    modbus_id: mod_bus_epever
+    command_throttle: 0ms
+    setup_priority: -10
+#    update_interval: ${updates} 
+
+captive_portal:
+
+switch:
+  - platform: gpio
+    id: relay1
+    name: "pump 2900"
+    pin: 
+      number: GPIO25
+      inverted: true
+    
+  - platform: gpio
+    id: relay2
+    name: "pump 2400"    
+    pin: 
+      number : GPIO26
+      inverted: true
+#    interlock: &interlock_group [ relay2, relay3, relay4]
+  - platform: gpio
+    id: relay3
+    name: "pump 1200"    
+    pin: 
+      number: GPIO27
+      inverted: true
+#    interlock: *interlock_group
+  - platform: gpio
+    id: relay4
+    name: "pump on/off"    
+    pin: 
+      number: GPIO14
+      inverted: true   
+#    interlock: *interlock_group    
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+sensor:
+  - platform: wifi_signal
+    name: "${devicename} - Wifi Signal"
+    update_interval: 60s
+    icon: mdi:wifi
+
+  - platform: uptime
+    name: "${devicename} - Uptime"
+    update_interval: 60s
+    icon: mdi:clock-outline
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "${devicename} - IP Address"
+    ssid:
+      name: "${devicename} - Wi-Fi SSID"
+    bssid:
+      name: "${devicename} - Wi-Fi BSSID"
+  - platform: version
+    name: "${devicename} - ESPHome Version"
+    hide_timestamp: true  

@@ -1,0 +1,140 @@
+substitutions:
+  devicename: garage_port
+  friendly_name: garage_port
+# Alarm entity  
+  verisure_device_entity_id: 'alarm_control_panel.verisure_alarm'
+
+  channel_1: Relay 1
+  channel_2: Relay 2
+
+  ssid: !secret wifi__iot2_ssid
+  ssidpassword: !secret wifi_iot2_password
+  otapassword: !secret api_password
+
+
+esphome:
+  name: ${devicename}
+
+esp8266:
+  board: esp01_1m
+
+wifi:
+  ssid: ${ssid}
+  password: ${ssidpassword}
+  manual_ip:
+    static_ip: 192.168.2.212
+    gateway: 192.168.2.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${devicename}
+    password: ${wifi_ap_password}
+
+captive_portal:
+
+# Enable Home Assistant API
+#api:
+#  password: ${otapassword}
+api:
+  encryption:
+    key: !secret api_key
+  reboot_timeout: 24h
+ota:
+  - platform: esphome
+    password: ${otapassword}
+
+
+
+time:
+  - platform: sntp
+    id: my_time
+
+
+##
+
+
+# The door contact sensor that is attached to SW on the 
+# Shelly 1. Not exposed to HA, instead used to set the 
+# state of the cover.
+binary_sensor:
+  - platform: gpio
+    pin: GPIO5
+    name: "Garage Door Contact Sensor"
+    id: contact_sensor
+    internal: true
+    filters:
+      - invert:
+
+# The relay in the Shelly 1 that will deliver the pulse to
+# the garage door opener (not exposed to HA)
+switch:
+  - platform: gpio
+    pin: GPIO4
+    name: "Garage Door Relay"
+    id: relay
+    internal: true
+
+# This creates the actual garage door in HA. The state is based
+# on the contact sensor. Opening/closing the garage door simply
+# turns the relay on/off with a 0.5s delay in between.
+cover:
+  - platform: template
+    device_class: garage
+    name: "Garage Door"
+    id: template_cov
+    lambda: |-
+      if (id(contact_sensor).state) {
+        return COVER_OPEN;
+      } else {
+        return COVER_CLOSED;
+      }
+# Only open garage door if the Alarm is not armed      
+    open_action:
+      - if:
+          condition:
+            
+            lambda: |-
+              ESP_LOGD("custom", "The value of sensor is: %s", id(param)->state.c_str());
+
+
+              return strcmp(id(param).state.c_str(), "disarmed") == 0;
+          then:
+            - switch.turn_on: relay
+            - delay: 0.5s
+            - switch.turn_off: relay
+          else:
+            - logger.log: "Alarm is not disarmed. Aborting open_action."
+            - homeassistant.event:
+                event: esphome.garageport_open_when_armed
+
+            
+          
+    close_action:
+      - switch.turn_on: relay
+      - delay: 0.5s
+      - switch.turn_off: relay
+
+
+
+# Enable logging
+logger:
+  level: debug
+
+# Send IP Address to HA
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: $friendly_name IP Address
+  - platform: homeassistant
+    name: "Parameter from HA"
+    entity_id: "alarm_control_panel.verisure_alarm"
+    id: param    
+    internal: true
+# Send WiFi signal strength & uptime to HA
+sensor:
+  - platform: wifi_signal
+    name: $friendly_name WiFi Strength
+    update_interval: 60s
+  - platform: uptime
+    name: $friendly_name "Uptime"
